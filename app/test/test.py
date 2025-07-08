@@ -1,9 +1,8 @@
 import requests
 
-API_URL = "http://localhost:8000/predict"
+API_URL = "http://localhost:8000/scan"
 
 image_url = "https://content.peat-cloud.com/w800/cassava-mosaic-disease-manioc-1561129470.jpg"
-image_url = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTjc8kqYAdM942IDQEBZQbbRoK4RmUVfW_6QA&s"
 
 img_response = requests.get(image_url)
 img_bytes = img_response.content
