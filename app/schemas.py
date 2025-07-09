@@ -8,9 +8,20 @@ class PredictionResponse(BaseModel):
 class ScanResponse(BaseModel):
     diseaseId: str
     name: str
-    confidence: float
+    image_url : str
     symptoms: List[str]
     causes: List[str]
-    treaments: List[str]
+    treatments: List[str]
     preventions: List[str]
-    
+    confidence: float
+
+
+class DiseaseInfo(BaseModel):
+    name : str
+    image_url : str
+    symptoms : List[str]
+    causes: List[str]
+    treatments: List[str]
+    preventions: List[str]
+
+
