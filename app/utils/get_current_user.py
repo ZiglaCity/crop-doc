@@ -1,14 +1,20 @@
 from jose import jwt
-from fastapi import Header, HTTPException
+from fastapi import Depends, HTTPException
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from dotenv import load_dotenv
 import os
 
 load_dotenv()
+
+security = HTTPBearer()
 SUPABASE_JWT_SECRET = os.getenv("SUPABASE_JWT_SECRET")
 
-def get_current_user(authorization: str = Header()):
+def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
     try:
-        scheme, token = authorization.split()
+        token = credentials.credentials
+        scheme = credentials.scheme
+
+        # scheme, token = authorization.split()
         print(scheme, token)
         if scheme.lower() != "bearer":
             raise HTTPException(status_code=403, detail="Invalid auth scheme")

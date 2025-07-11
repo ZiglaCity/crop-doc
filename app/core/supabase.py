@@ -1,5 +1,7 @@
 import os
+from typing import Optional
 from supabase import create_client, Client
+from datetime import datetime
 import uuid
 from datetime import datetime
 from dotenv import load_dotenv
@@ -75,19 +77,42 @@ def save_scan_result(scan_data: dict, user_id: str) -> bool:
         raise HTTPException(status_code=400, detail="Error saving scan result: {e}")
 
 
-def get_user_scan_history(user_id : str):
-    response = supabase.table("scans").select("*").eq("user_id", user_id) 
+def get_user_scan_history(user_id: str):
+    response = supabase.table("scans").select("*").eq("user_id", user_id).execute()
+    if not response or not response.data:
+            raise HTTPException(status_code=404, detail="No scans found for user")
     return response.data
 
 def get_scan_by_id(id: str):
     response = supabase.table("scans").select("*").eq("id", id).limit(1).execute()
+    if not response or not response.data:
+        raise HTTPException(status_code=404, detail=f"Scan with id {id} not found")
+    
     return response.data
 
 def delete_scan(id : str):
-    response = supabase.table("scans").delete().eq("id", id)
-    if response.error:
+    response = supabase.table("scans").delete().eq("id", id).execute()
+    if not response or not response.data:
         raise HTTPException(status_code=400, detail="Error deleting scan result: {response.error.message} ")
+    print("Delete response:", response.data)
     return 
+
+
+def add_scan_feedback(scan_id: str, helpful: bool, comments: Optional[str] = None):
+    feedback_payload = {
+        "feedback": {
+            "helpful": helpful,
+            "comments": comments,
+            "timestamp": int(datetime.utcnow().timestamp())
+        }
+    }
+
+    response = supabase.table("scans").update(feedback_payload).eq("id", scan_id).execute()
+
+    if not response:
+        raise HTTPException(status_code=400, detail=f"Failed to add feedback: {response.error.message}")
+    
+    return True
 
 
 

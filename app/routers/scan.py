@@ -1,10 +1,10 @@
 from fastapi import APIRouter, File, UploadFile, HTTPException, Depends
-from app.schemas import DiseaseInfo, ScanResponse, ScanInfo
+from app.schemas import DiseaseInfo, ScanResponse, ScanInfo, Feedback
 from typing import List
 from app.model import load_model, predict_image
 from app.utils.utils import read_imagefile
 from app.utils.get_current_user import get_current_user
-from app.core.supabase import upload_image_to_supabase, get_or_save_disease_info, get_user_scan_history, get_scan_by_id, delete_scan, save_scan_result
+from app.core.supabase import upload_image_to_supabase, get_or_save_disease_info, get_user_scan_history, get_scan_by_id, delete_scan, save_scan_result, add_scan_feedback
 from app.core.request_disease_info import get_more_info
 
 router = APIRouter()
@@ -25,7 +25,7 @@ async def predict(
         image = read_imagefile(image_bytes)
 
         predicted_label, confidence = predict_image(image, model, class_labels)
-        
+
         image_url = upload_image_to_supabase(image_bytes= image_bytes, original_filename = file.filename)
         
         # before getting more info, check if disease already exist in database...
@@ -54,6 +54,15 @@ def get_scan_history(user_id: str = Depends(get_current_user)):
     if not result:
         raise HTTPException(status_code=404, detail="No scans found for user")
     return result
+
+@router.post('/feedback')
+def add_feedback_to_scan(feedback: Feedback):
+    success = add_scan_feedback(
+        scan_id=feedback.scan_id,
+        helpful=feedback.helpful,
+        comments=feedback.comments
+    )
+    return {"message": "Feedback submitted successfully", "success": success}
 
 
 @router.get('/history/{id}', response_model=ScanInfo)

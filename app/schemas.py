@@ -1,5 +1,6 @@
 from typing import Optional, List, Dict
 from pydantic import BaseModel
+from datetime import datetime
 
 class PredictionResponse(BaseModel):
     label: str
@@ -31,7 +32,18 @@ class Location(BaseModel):
     longitude: float
     name: Optional[str] = None
 
+class FeedbackStructure(BaseModel):
+    helpful: bool
+    comments: Optional[str] = None
+    timestamp: Optional[datetime] = None 
+
+class Feedback(BaseModel):
+    scan_id: str
+    helpful: bool
+    comments: Optional[str] = None
+
 class ScanInfo(BaseModel):
+    id: str
     user_id: str
     image_url: str
     thumbnail_url: Optional[str] = None
@@ -46,6 +58,7 @@ class ScanInfo(BaseModel):
     location: Optional[Location] = None
     notes: Optional[str] = None
     tags: Optional[List[str]] = None
+    feedback: Optional[FeedbackStructure] = None 
 
 
 class Disease(BaseModel):
@@ -62,12 +75,6 @@ class Disease(BaseModel):
     class Config:
         orm_mode = True
     
-
-class FeedbackCreate(BaseModel):
-    scan_id: str
-    helpful: bool
-    comments: Optional[str] = None
-
 
 class ContextData(BaseModel):
     recentScans: Optional[List[str]]
