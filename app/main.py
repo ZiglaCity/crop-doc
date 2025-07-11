@@ -2,7 +2,7 @@ from fastapi import FastAPI, File, UploadFile
 from app.model import load_model, predict_image
 from app.schemas import PredictionResponse
 from app.utils.utils import read_imagefile
-from app.routers import scan
+from app.routers import scan, disease
 
 app = FastAPI()
 
@@ -17,3 +17,5 @@ async def predict(file: UploadFile = File(...)):
     return {"label": predicted_label, "confidence": confidence}
 
 app.include_router(scan.router, prefix="/scan", tags=["Scan"])
+
+app.include_router(disease.router, prefix="/diseases", tags=["Diseases"])

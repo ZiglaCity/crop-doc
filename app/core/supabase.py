@@ -88,3 +88,21 @@ def delete_scan(id : str):
     if response.error:
         raise HTTPException(status_code=400, detail="Error deleting scan result: {response.error.message} ")
     return 
+
+
+
+def get_all_diseases():
+    response = supabase.table("diseases").select("*").order("name", desc=False).execute()
+    return response.data
+
+def get_disease_by_id(disease_id: str):
+    response = supabase.table("diseases").select("*").eq("id", disease_id).limit(1).execute()
+    return response.data[0] if response.data else None
+
+def search_diseases(search: str):
+    response = supabase.table("diseases").select("*").ilike("name", f"%{search}%").execute()
+    return response.data
+
+def get_diseases_by_category(category: str):
+    response = supabase.table("diseases").select("*").ilike("category", f"%{category}%").execute()
+    return response.data

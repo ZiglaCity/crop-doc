@@ -1,3 +1,5 @@
+import uuid
+from fastapi import HTTPException
 from PIL import Image
 import io
 
@@ -35,3 +37,10 @@ text = """```json
   ]
 }
 ```"""
+
+
+def validate_uuid(id: str):
+    try:
+        uuid.UUID(id)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid ID format (not a valid UUID)")
