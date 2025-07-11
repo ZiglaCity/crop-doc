@@ -1,7 +1,7 @@
 from fastapi import FastAPI, File, UploadFile
 from app.model import load_model, predict_image
 from app.schemas import PredictionResponse
-from app.utils import read_imagefile
+from app.utils.utils import read_imagefile
 from app.routers import scan
 
 app = FastAPI()

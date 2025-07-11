@@ -44,7 +44,7 @@ def get_more_info(disease_name: str) -> Dict:
     # print(response)
 
     # to avoid wasting out tokens lets use a pre-propmted response;
-    from app.utils import text
+    from app.utils.utils import text
     response = text
 
     try:
@@ -52,7 +52,6 @@ def get_more_info(disease_name: str) -> Dict:
             # text = response.candidates[0].content.parts[0].text
             clean_text = text.strip().lstrip("```json").rstrip("```").strip()
             data_dict = json.loads(clean_text)
-            print(data_dict)
             return data_dict
         else:
             return "error"
