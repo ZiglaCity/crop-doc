@@ -35,8 +35,6 @@ def get_more_info(disease_name: str) -> Dict:
         Crop disease to analyze: "{disease_name}"
     """.strip()
 
-    client = genai.Client(api_key=api_key)
-
     # response = client.models.generate_content(
     #     model="gemini-2.5-flash",
     #     contents=prompt

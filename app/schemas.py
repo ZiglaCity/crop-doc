@@ -100,3 +100,17 @@ class MessageResponse(BaseModel):
     related_scan_id: Optional[str]
     audio_uri: Optional[str]
     context_data: Optional[Dict]
+
+
+class ChatMessage(BaseModel):
+    role: str  # "user" | "assistant" | "system"
+    content: str
+
+class ChatRequest(BaseModel):
+    messages: List[ChatMessage]
+    language: Optional[str] = "en"
+    context: Optional[dict] = None  # Can include scan result or location
+
+class ChatResponse(BaseModel):
+    reply: str
+    suggestedQuestions: List[str]
