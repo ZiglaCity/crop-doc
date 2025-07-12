@@ -1,12 +1,13 @@
 import os
 from typing import Dict
-from google import genai
+import google.generativeai as genai
 import json
 from dotenv import load_dotenv
 load_dotenv()
 
 api_key=os.getenv("GEMINI_API_KEY")
-client = genai.Client(api_key=api_key)
+genai.configure(api_key=api_key)
+
 
 def get_more_info(disease_name: str) -> Dict:
     prompt = f"""
@@ -35,20 +36,17 @@ def get_more_info(disease_name: str) -> Dict:
         Crop disease to analyze: "{disease_name}"
     """.strip()
 
-    # response = client.models.generate_content(
-    #     model="gemini-2.5-flash",
-    #     contents=prompt
-    # )
-    # print(response)
+    model = genai.GenerativeModel('gemini-1.5-flash')
+    response = model.generate_content(prompt).text
+    print(response)
 
     # to avoid wasting out tokens lets use a pre-propmted response;
-    from app.utils.utils import text
-    response = text
+    # from app.utils.utils import text
+    # response = text
 
     try:
         if (response):
-            # text = response.candidates[0].content.parts[0].text
-            clean_text = text.strip().lstrip("```json").rstrip("```").strip()
+            clean_text = response.strip().lstrip("```json").rstrip("```").strip()
             data_dict = json.loads(clean_text)
             return data_dict
         else:
@@ -57,3 +55,12 @@ def get_more_info(disease_name: str) -> Dict:
     except Exception as e:
         print("[Gemini Parsing Error]", e)
         raise Exception("Gemini did not return valid structured JSON.")
+
+
+
+if __name__ == "__main__":
+    disease = "Maize - leaf beetle"
+    reply = get_more_info(disease)
+
+    print(" AI Reply:\n")
+    print(reply, type(reply))
